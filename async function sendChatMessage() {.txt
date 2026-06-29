@@ -1,0 +1,33 @@
+async function sendChatMessage() {
+  const input = document.querySelector('.chat-input');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  // Add user message to chat
+  addMessageToChat('user', message);
+  input.value = '';
+  
+  // Get AI response
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message })
+    });
+    
+    const data = await response.json();
+    addMessageToChat('ai', data.reply);
+  } catch (error) {
+    addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+  }
+}
+
+function addMessageToChat(sender, text) {
+  const chatContainer = document.querySelector('.chat-messages');
+  const messageDiv = document.createElement('div');
+  messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
+  messageDiv.textContent = text;
+  chatContainer.appendChild(messageDiv);
+  chatContainer.scrollTop = chatContainer.scrollHeight;
+}
