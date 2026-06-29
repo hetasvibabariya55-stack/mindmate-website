@@ -1,33 +1,41 @@
 async function sendChatMessage() {
-  const input = document.querySelector('.chat-input');
-  const message = input.value.trim();
-  
-  if (!message) return;
-  
-  // Add user message to chat
-  addMessageToChat('user', message);
-  input.value = '';
-  
-  // Get AI response
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message })
-    });
-    
-    const data = await response.json();
-    addMessageToChat('ai', data.reply);
-  } catch (error) {
-    addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
-  }
+    const input = document.querySelector('.chat-input');
+    const message = input.value.trim();
+
+    if (!message) return;
+
+    // Show user's message
+    addMessageToChat('user', message);
+    input.value = '';
+
+    // Default AI reply
+    let reply = "I'm here to listen. Tell me more about how you're feeling.";
+
+    // Different replies based on keywords
+    if (message.toLowerCase().includes('stress')) {
+        reply = "It sounds like you're stressed. Try taking a short break and focusing on one task at a time.";
+    } else if (message.toLowerCase().includes('sad')) {
+        reply = "I'm sorry you're feeling sad. Talking to someone you trust can really help.";
+    } else if (message.toLowerCase().includes('exam')) {
+        reply = "Exams can feel overwhelming. Create a study plan and take regular breaks.";
+    } else if (message.toLowerCase().includes('anxiety')) {
+        reply = "Take a few deep breaths and try to identify what's making you anxious.";
+    }
+
+    // Show AI reply after 1 second
+    setTimeout(() => {
+        addMessageToChat('ai', reply);
+    }, 1000);
 }
 
 function addMessageToChat(sender, text) {
-  const chatContainer = document.querySelector('.chat-messages');
-  const messageDiv = document.createElement('div');
-  messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
-  messageDiv.textContent = text;
-  chatContainer.appendChild(messageDiv);
-  chatContainer.scrollTop = chatContainer.scrollHeight;
+    const chatContainer = document.querySelector('.chat-messages');
+    const messageDiv = document.createElement('div');
+
+    messageDiv.className =
+        sender === 'user' ? 'user-message' : 'ai-message';
+
+    messageDiv.textContent = text;
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
